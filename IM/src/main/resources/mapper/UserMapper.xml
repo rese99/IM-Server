@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yun.im.mapper.UserMapper">
+
+    <select id="login" parameterType="com.yun.im.entity.User" resultType="com.yun.im.entity.User">
+        select *
+        from userinfo
+        where loginemail = #{email}
+          and password = #{password}
+    </select>
+    <insert id="register" parameterType="com.yun.im.entity.User">
+        insert
+        userinfo values (
+        #{id},
+        #{name},
+        #{password},
+        #{image},
+        #{email},
+        #{loginemail},
+        #{token},
+        #{aes}
+        )
+    </insert>
+    <select id="GetUsers" resultType="com.yun.im.entity.Friends">
+        select *
+        from userfriends
+        where userId = #{userId}
+    </select>
+    <insert id="messages">
+        insert
+        messageinfo value (
+        #{message},
+        #{receiverId},
+        #{timestamp},
+        #{senderId},
+        #{message_type}
+        )
+    </insert>
+    <select id="GetMessagesForId" resultType="com.yun.im.entity.Messages">
+        select *
+        from messageinfo
+        where receiverId = #{receiverId}
+    </select>
+    <select id="GetMessages" resultType="com.yun.im.entity.Messages">
+        select *
+        from messageinfo
+    </select>
+    <delete id="removeMessageForId">
+        delete
+        from messageinfo
+        where receiverId = #{id}
+    </delete>
+    <select id="GetUserId" resultType="java.lang.String">
+        select id
+        from userinfo
+    </select>
+    <delete id="DeleteUserForId">
+        delete from userinfo where id=
+        #{userId}
+        and
+        password
+        =
+        #{password}
+    </delete>
+    <update id="updatePassword">
+        UPDATE userinfo
+        SET password=#{newPassword}
+        where id = #{userId}
+          AND password = #{password}
+    </update>
+    <select id="getUsers" resultType="com.yun.im.entity.User">
+        select id, name, image, email,AES
+        from userinfo
+        where id like CONCAT('%', #{key}, '%')
+           or name like CONCAT('%', #{key}, '%')
+    </select>
+    <select id="getUserForId" resultType="com.yun.im.entity.User">
+        select name, image, email ,AES
+        from userinfo
+        where id = #{id}
+    </select>
+    <insert id="AddFriends">
+        INSERT INTO userfriends (userid, name, email, image, id, studs,friend_aes)
+        SELECT #{userid}, userinfo${id}.name, userinfo${id}.email, userinfo${id}.image, ${id}, 0, userinfo${id}.aes
+        FROM userinfo AS userinfo${id}
+        WHERE userinfo${id}.id = #{id}
+        UNION ALL
+        SELECT #{id}, userinfo${userid}.name, userinfo${userid}.email, userinfo${userid}.image, ${userid}, 0 ,userinfo${userid}.aes
+        FROM userinfo AS userinfo${userid}
+        WHERE userinfo${userid}.id = #{userid};
+    </insert>
+    <update id="updateToken">
+        UPDATE userinfo
+        SET token=#{token}
+        where loginemail = #{email}
+          and password = #{password}
+    </update>
+    <select id="connect" resultType="java.lang.String">
+        select 1 from userinfo where id=#{id} and token=#{token} limit 1
+    </select>
+    <select id="selectEmail" resultType="java.lang.String">
+        select 1 from userinfo where email=#{email} limit 1
+    </select>
+    <update id="updatePasswordToId">
+        update userinfo
+        set password=#{password}
+        where email = #{email}
+    </update>
+    <insert id="insertEmoji">
+        insert emoji value(
+        #{emoji1},
+        #{emoji2},
+        #{emoji3},
+        #{emoji4},
+        #{emoji5},
+        #{emoji6},
+        #{emoji7},
+        #{emoji8},
+        #{emoji9},
+        #{emoji10}
+        )
+    </insert>
+</mapper>
